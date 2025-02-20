@@ -4,6 +4,7 @@ A crate implementing a wrapper around [rquest](https://crates.io/crates/rquest)
 to allow for client middleware chains.
 
 Note: This fork is experimental and not meant for production use. Use at your own risk.
+Almost all tests are passing except one (which means that this is not 100% compatible with reqwest)
 
 [![Crates.io](https://img.shields.io/crates/v/reqwest-middleware.svg)](https://crates.io/crates/reqwest-middleware)
 [![Docs.rs](https://docs.rs/reqwest-middleware/badge.svg)](https://docs.rs/reqwest-middleware)
@@ -32,7 +33,7 @@ The `reqwest-middleware` client exposes the same interface as a plain `reqwest` 
 # ...
 [dependencies]
 rquest = { version = "2.1.5", features = ["rustls-tls"] }
-reqwest-middleware = { git = "https://github.com/Ulyssedev/reqwest-middleware.git"}
+reqwest-middleware = { git = "https://github.com/Ulyssedev/rquest-middleware.git"} # Line to change in order to use the fork
 reqwest-retry = "0.7"
 reqwest-tracing = "0.5"
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
