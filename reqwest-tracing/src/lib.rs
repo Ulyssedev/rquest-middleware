@@ -9,7 +9,7 @@
 //! use reqwest_tracing::TracingMiddleware;
 //!
 //! # async fn example() -> Result<()> {
-//! let reqwest_client = reqwest::Client::builder().build().unwrap();
+//! let reqwest_client = rquest::Client::builder().build().unwrap();
 //! let client = ClientBuilder::new(reqwest_client)
 //!    // Insert the tracing middleware
 //!    .with(TracingMiddleware::default())
@@ -28,7 +28,7 @@
 //!     TracingMiddleware, OtelName
 //! };
 //! # async fn example() -> Result<()> {
-//! let reqwest_client = reqwest::Client::builder().build().unwrap();
+//! let reqwest_client = rquest::Client::builder().build().unwrap();
 //! let client = ClientBuilder::new(reqwest_client)
 //!    // Inserts the extension before the request is started
 //!    .with_init(Extension(OtelName("my-client".into())))
@@ -54,7 +54,7 @@
 //! ```rust
 //! use reqwest_middleware::Result;
 //! use http::Extensions;
-//! use reqwest::{Request, Response};
+//! use rquest::{Request, Response};
 //! use reqwest_middleware::ClientBuilder;
 //! use reqwest_tracing::{
 //!     default_on_request_end, reqwest_otel_span, ReqwestOtelSpanBackend, TracingMiddleware
@@ -77,7 +77,7 @@
 //!     }
 //! }
 //!
-//! let http = ClientBuilder::new(reqwest::Client::new())
+//! let http = ClientBuilder::new(rquest::Client::new())
 //!     .with(TracingMiddleware::<TimeTrace>::new())
 //!     .build();
 //! ```

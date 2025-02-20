@@ -1,12 +1,12 @@
-//! This crate provides [`ClientWithMiddleware`], a wrapper around [`reqwest::Client`] with the
+//! This crate provides [`ClientWithMiddleware`], a wrapper around [`rquest::Client`] with the
 //! ability to attach middleware which runs on every request.
 //!
 //! You'll want to instantiate [`ClientWithMiddleware`] using [`ClientBuilder`], then you can
 //! attach your middleware using [`with`], finalize it with [`build`] and from then on sending
-//! requests is the same as with reqwest:
+//! requests is the same as with rquest:
 //!
 //! ```
-//! use reqwest::{Client, Request, Response};
+//! use rquest::{Client, Request, Response};
 //! use reqwest_middleware::{ClientBuilder, Middleware, Next, Result};
 //! use http::Extensions;
 //!
@@ -28,8 +28,8 @@
 //! }
 //!
 //! async fn run() {
-//!     let reqwest_client = Client::builder().build().unwrap();
-//!     let client = ClientBuilder::new(reqwest_client)
+//!     let rquest_client = Client::builder().build().unwrap();
+//!     let client = ClientBuilder::new(rquest_client)
 //!         .with(LoggingMiddleware)
 //!         .build();
 //!     let resp = client.get("https://truelayer.com").send().await.unwrap();
@@ -58,4 +58,4 @@ pub use client::{ClientBuilder, ClientWithMiddleware, RequestBuilder};
 pub use error::{Error, Result};
 pub use middleware::{Middleware, Next};
 pub use req_init::{Extension, RequestInitialiser};
-pub use reqwest;
+pub use rquest;

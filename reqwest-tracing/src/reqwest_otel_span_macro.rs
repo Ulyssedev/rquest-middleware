@@ -27,12 +27,12 @@
 /// # Macro syntax
 ///
 /// The first argument is a [span name](https://opentelemetry.io/docs/reference/specification/trace/api/#span).
-/// The second argument passed to [`reqwest_otel_span!`](crate::reqwest_otel_span) is a reference to an [`reqwest::Request`].
+/// The second argument passed to [`reqwest_otel_span!`](crate::reqwest_otel_span) is a reference to an [`rquest::Request`].
 ///
 /// ```rust
 /// use reqwest_middleware::Result;
 /// use http::Extensions;
-/// use reqwest::{Request, Response};
+/// use rquest::{Request, Response};
 /// use reqwest_tracing::{
 ///     default_on_request_end, reqwest_otel_span, ReqwestOtelSpanBackend
 /// };
@@ -61,7 +61,7 @@
 ///
 /// ```rust,should_panic
 /// use reqwest_tracing::reqwest_otel_span;
-/// # let request: &reqwest::Request = todo!();
+/// # let request: &rquest::Request = todo!();
 ///
 /// // Define a `time_elapsed` field as empty. It might be populated later.
 /// // (This example is just to show how to inject data - otel already tracks durations)
@@ -83,7 +83,7 @@
 /// ```rust,should_panic
 /// use reqwest_tracing::reqwest_otel_span;
 /// use tracing::Level;
-/// # let request: &reqwest::Request = todo!();
+/// # let request: &rquest::Request = todo!();
 ///
 /// // Reduce the log level for service endpoints/probes
 /// let level = if request.method().as_str() == "POST" {

@@ -2,8 +2,8 @@ use std::borrow::Cow;
 
 use http::Extensions;
 use matchit::Router;
-use reqwest::{Request, Response, StatusCode as RequestStatusCode, Url};
 use reqwest_middleware::{Error, Result};
+use rquest::{Request, Response, StatusCode as RequestStatusCode, Url};
 use tracing::{warn, Span};
 
 use crate::reqwest_otel_span;
@@ -79,8 +79,8 @@ pub fn default_on_request_end(span: &Span, outcome: &Result<Response>) {
 }
 
 #[cfg(feature = "deprecated_attributes")]
-fn get_header_value(key: &str, headers: &reqwest::header::HeaderMap) -> String {
-    let header_default = &reqwest::header::HeaderValue::from_static("");
+fn get_header_value(key: &str, headers: &rquest::header::HeaderMap) -> String {
+    let header_default = &rquest::header::HeaderValue::from_static("");
     format!("{:?}", headers.get(key).unwrap_or(header_default)).replace('"', "")
 }
 
@@ -108,7 +108,7 @@ pub fn default_on_request_failure(span: &Span, e: &Error) {
     span.record(OTEL_STATUS_CODE, "ERROR");
     span.record(ERROR_MESSAGE, error_message.as_str());
     span.record(ERROR_CAUSE_CHAIN, error_cause_chain.as_str());
-    if let Error::Reqwest(e) = e {
+    if let Error::Rquest(e) = e {
         if let Some(status) = e.status() {
             span.record(HTTP_RESPONSE_STATUS_CODE, status.as_u16());
             #[cfg(feature = "deprecated_attributes")]
@@ -208,7 +208,7 @@ fn get_span_status(request_status: RequestStatusCode) -> Option<&'static str> {
 ///     TracingMiddleware, OtelName
 /// };
 /// # async fn example() -> Result<()> {
-/// let reqwest_client = reqwest::Client::builder().build().unwrap();
+/// let reqwest_client = rquest::Client::builder().build().unwrap();
 /// let client = ClientBuilder::new(reqwest_client)
 ///    // Inserts the extension before the request is started
 ///    .with_init(Extension(OtelName("my-client".into())))
@@ -245,7 +245,7 @@ pub struct OtelName(pub Cow<'static, str>);
 ///     TracingMiddleware, OtelPathNames
 /// };
 /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-/// let reqwest_client = reqwest::Client::builder().build()?;
+/// let reqwest_client = rquest::Client::builder().build()?;
 /// let client = ClientBuilder::new(reqwest_client)
 ///    // Inserts the extension before the request is started
 ///    .with_init(Extension(OtelPathNames::known_paths(["/payment/{paymentId}"])?))
@@ -325,7 +325,7 @@ impl OtelPathNames {
 ///     TracingMiddleware, DisableOtelPropagation
 /// };
 /// # async fn example() -> Result<()> {
-/// let reqwest_client = reqwest::Client::builder().build().unwrap();
+/// let reqwest_client = rquest::Client::builder().build().unwrap();
 /// let client = ClientBuilder::new(reqwest_client)
 ///    // Inserts the extension before the request is started
 ///    .with_init(Extension(DisableOtelPropagation))
@@ -366,7 +366,7 @@ fn remove_credentials(url: &Url) -> Cow<'_, str> {
 mod tests {
     use super::*;
 
-    use reqwest::header::{HeaderMap, HeaderValue};
+    use rquest::header::{HeaderMap, HeaderValue};
 
     fn get_header_value(key: &str, headers: &HeaderMap) -> String {
         let header_default = &HeaderValue::from_static("");

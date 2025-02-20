@@ -2,11 +2,11 @@ use crate::retryable::Retryable;
 use http::StatusCode;
 use reqwest_middleware::Error;
 
-/// A strategy to create a [`Retryable`] from a [`Result<reqwest::Response, reqwest_middleware::Error>`]
+/// A strategy to create a [`Retryable`] from a [`Result<rquest::Response, reqwest_middleware::Error>`]
 ///
 /// A [`RetryableStrategy`] has a single `handler` functions.
 /// The result of calling the request could be:
-/// - [`reqwest::Response`] In case the request has been sent and received correctly
+/// - [`rquest::Response`] In case the request has been sent and received correctly
 ///     This could however still mean that the server responded with a erroneous response.
 ///     For example a HTTP statuscode of 500
 /// - [`reqwest_middleware::Error`] In this case the request actually failed.
@@ -16,7 +16,7 @@ use reqwest_middleware::Error;
 ///
 /// ```
 /// use reqwest_retry::{default_on_request_failure, policies::ExponentialBackoff, Retryable, RetryableStrategy, RetryTransientMiddleware};
-/// use reqwest::{Request, Response};
+/// use rquest::{Request, Response};
 /// use reqwest_middleware::{ClientBuilder, Middleware, Next, Result};
 /// use http::Extensions;
 ///
@@ -41,7 +41,7 @@ use reqwest_middleware::Error;
 /// // Just a toy example, retry when the successful response code is 201, else do nothing.
 /// struct Retry201;
 /// impl RetryableStrategy for Retry201 {
-///     fn handle(&self, res: &Result<reqwest::Response>) -> Option<Retryable> {
+///     fn handle(&self, res: &Result<rquest::Response>) -> Option<Retryable> {
 ///          match res {
 ///              // retry if 201
 ///              Ok(success) if success.status() == 201 => Some(Retryable::Transient),
@@ -65,7 +65,7 @@ use reqwest_middleware::Error;
 ///         Retry201,
 ///     );
 ///
-///     let client = ClientBuilder::new(reqwest::Client::new())
+///     let client = ClientBuilder::new(rquest::Client::new())
 ///         // Retry failed requests.
 ///         .with(ret_s)
 ///         // Log the requests
@@ -88,14 +88,14 @@ use reqwest_middleware::Error;
 /// }
 /// ```
 pub trait RetryableStrategy {
-    fn handle(&self, res: &Result<reqwest::Response, Error>) -> Option<Retryable>;
+    fn handle(&self, res: &Result<rquest::Response, Error>) -> Option<Retryable>;
 }
 
 /// The default [`RetryableStrategy`] for [`RetryTransientMiddleware`](crate::RetryTransientMiddleware).
 pub struct DefaultRetryableStrategy;
 
 impl RetryableStrategy for DefaultRetryableStrategy {
-    fn handle(&self, res: &Result<reqwest::Response, Error>) -> Option<Retryable> {
+    fn handle(&self, res: &Result<rquest::Response, Error>) -> Option<Retryable> {
         match res {
             Ok(success) => default_on_request_success(success),
             Err(error) => default_on_request_failure(error),
@@ -110,7 +110,7 @@ impl RetryableStrategy for DefaultRetryableStrategy {
 /// * The status was 408 (request timeout) or 429 (too many requests)
 ///
 /// Note that success here means that the request finished without interruption, not that it was logically OK.
-pub fn default_on_request_success(success: &reqwest::Response) -> Option<Retryable> {
+pub fn default_on_request_success(success: &rquest::Response) -> Option<Retryable> {
     let status = success.status();
     if status.is_server_error() {
         Some(Retryable::Transient)
@@ -135,7 +135,7 @@ pub fn default_on_request_failure(error: &Error) -> Option<Retryable> {
     match error {
         // If something fails in the middleware we're screwed.
         Error::Middleware(_) => Some(Retryable::Fatal),
-        Error::Reqwest(error) => {
+        Error::Rquest(error) => {
             #[cfg(not(target_arch = "wasm32"))]
             let is_connect = error.is_connect();
             #[cfg(target_arch = "wasm32")]
@@ -149,8 +149,8 @@ pub fn default_on_request_failure(error: &Error) -> Option<Retryable> {
             {
                 Some(Retryable::Fatal)
             } else if error.is_request() {
-                // It seems that hyper::Error(IncompleteMessage) is not correctly handled by reqwest.
-                // Here we check if the Reqwest error was originated by hyper and map it consistently.
+                // It seems that hyper::Error(IncompleteMessage) is not correctly handled by rquest.
+                // Here we check if the rquest error was originated by hyper and map it consistently.
                 #[cfg(not(target_arch = "wasm32"))]
                 if let Some(hyper_error) = get_source_error_type::<hyper::Error>(&error) {
                     // The hyper::Error(IncompleteMessage) is raised if the HTTP response is well formatted but does not contain all the bytes.

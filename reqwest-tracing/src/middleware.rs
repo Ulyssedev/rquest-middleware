@@ -1,6 +1,6 @@
 use http::Extensions;
-use reqwest::{Request, Response};
 use reqwest_middleware::{Middleware, Next, Result};
+use rquest::{Request, Response};
 use tracing::Instrument;
 
 use crate::{DefaultSpanBackend, ReqwestOtelSpanBackend};
@@ -32,9 +32,9 @@ impl Default for TracingMiddleware<DefaultSpanBackend> {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait::async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait::async_trait(?Send))]
-impl<ReqwestOtelSpan> Middleware for TracingMiddleware<ReqwestOtelSpan>
+impl<RquestOtelSpan> Middleware for TracingMiddleware<RquestOtelSpan>
 where
-    ReqwestOtelSpan: ReqwestOtelSpanBackend + Sync + Send + 'static,
+    RquestOtelSpan: ReqwestOtelSpanBackend + Sync + Send + 'static,
 {
     async fn handle(
         &self,
@@ -42,7 +42,7 @@ where
         extensions: &mut Extensions,
         next: Next<'_>,
     ) -> Result<Response> {
-        let request_span = ReqwestOtelSpan::on_request_start(&req, extensions);
+        let request_span = RquestOtelSpan::on_request_start(&req, extensions);
 
         let outcome_future = async {
             #[cfg(any(
@@ -66,7 +66,7 @@ where
 
             // Run the request
             let outcome = next.run(req, extensions).await;
-            ReqwestOtelSpan::on_request_end(&request_span, &outcome, extensions);
+            RquestOtelSpan::on_request_end(&request_span, &outcome, extensions);
             outcome
         };
 

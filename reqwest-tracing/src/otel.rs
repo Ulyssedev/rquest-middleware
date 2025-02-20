@@ -1,9 +1,9 @@
-use reqwest::header::{HeaderName, HeaderValue};
-use reqwest::Request;
+use rquest::header::{HeaderName, HeaderValue};
+use rquest::Request;
 use std::str::FromStr;
 use tracing::Span;
 
-/// Injects the given OpenTelemetry Context into a reqwest::Request headers to allow propagation downstream.
+/// Injects the given OpenTelemetry Context into a rquest::Request headers to allow propagation downstream.
 pub fn inject_opentelemetry_context_into_request(mut request: Request) -> Request {
     #[cfg(feature = "opentelemetry_0_20")]
     opentelemetry_0_20_pkg::global::get_text_map_propagator(|injector| {
@@ -163,8 +163,8 @@ mod test {
     use std::sync::OnceLock;
 
     use crate::{DisableOtelPropagation, TracingMiddleware};
-    use reqwest::Response;
     use reqwest_middleware::{ClientBuilder, ClientWithMiddleware, Extension};
+    use rquest::Response;
     use tracing::{info_span, Instrument, Level};
 
     use tracing_subscriber::{filter, layer::SubscriberExt, Registry};
@@ -383,7 +383,7 @@ mod test {
 
     #[tokio::test]
     async fn tracing_middleware_propagates_otel_data_even_when_the_span_is_disabled() {
-        let client = ClientBuilder::new(reqwest::Client::new())
+        let client = ClientBuilder::new(rquest::Client::new())
             .with(TracingMiddleware::default())
             .build();
 
@@ -397,7 +397,7 @@ mod test {
 
     #[tokio::test]
     async fn context_no_propagated() {
-        let client = ClientBuilder::new(reqwest::Client::new())
+        let client = ClientBuilder::new(rquest::Client::new())
             .with_init(Extension(DisableOtelPropagation))
             .with(TracingMiddleware::default())
             .build();

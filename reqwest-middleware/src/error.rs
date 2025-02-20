@@ -1,4 +1,4 @@
-use reqwest::{StatusCode, Url};
+use rquest::{StatusCode, Url};
 use thiserror::Error;
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -8,9 +8,9 @@ pub enum Error {
     /// There was an error running some middleware
     #[error(transparent)]
     Middleware(#[from] anyhow::Error),
-    /// Error from the underlying reqwest client
+    /// Error from the underlying rquest client
     #[error(transparent)]
-    Reqwest(#[from] reqwest::Error),
+    Rquest(#[from] rquest::Error),
 }
 
 impl Error {
@@ -25,7 +25,7 @@ impl Error {
     pub fn url(&self) -> Option<&Url> {
         match self {
             Error::Middleware(_) => None,
-            Error::Reqwest(e) => e.url(),
+            Error::Rquest(e) => e.url(),
         }
     }
 
@@ -37,7 +37,7 @@ impl Error {
     pub fn url_mut(&mut self) -> Option<&mut Url> {
         match self {
             Error::Middleware(_) => None,
-            Error::Reqwest(e) => e.url_mut(),
+            Error::Rquest(e) => e.url_mut(),
         }
     }
 
@@ -45,7 +45,7 @@ impl Error {
     pub fn with_url(self, url: Url) -> Self {
         match self {
             Error::Middleware(_) => self,
-            Error::Reqwest(e) => e.with_url(url).into(),
+            Error::Rquest(e) => e.with_url(url).into(),
         }
     }
 
@@ -54,7 +54,7 @@ impl Error {
     pub fn without_url(self) -> Self {
         match self {
             Error::Middleware(_) => self,
-            Error::Reqwest(e) => e.without_url().into(),
+            Error::Rquest(e) => e.without_url().into(),
         }
     }
 
@@ -62,7 +62,7 @@ impl Error {
     pub fn is_middleware(&self) -> bool {
         match self {
             Error::Middleware(_) => true,
-            Error::Reqwest(_) => false,
+            Error::Rquest(_) => false,
         }
     }
 
@@ -70,7 +70,7 @@ impl Error {
     pub fn is_builder(&self) -> bool {
         match self {
             Error::Middleware(_) => false,
-            Error::Reqwest(e) => e.is_builder(),
+            Error::Rquest(e) => e.is_builder(),
         }
     }
 
@@ -78,7 +78,7 @@ impl Error {
     pub fn is_redirect(&self) -> bool {
         match self {
             Error::Middleware(_) => false,
-            Error::Reqwest(e) => e.is_redirect(),
+            Error::Rquest(e) => e.is_redirect(),
         }
     }
 
@@ -86,7 +86,7 @@ impl Error {
     pub fn is_status(&self) -> bool {
         match self {
             Error::Middleware(_) => false,
-            Error::Reqwest(e) => e.is_status(),
+            Error::Rquest(e) => e.is_status(),
         }
     }
 
@@ -94,7 +94,7 @@ impl Error {
     pub fn is_timeout(&self) -> bool {
         match self {
             Error::Middleware(_) => false,
-            Error::Reqwest(e) => e.is_timeout(),
+            Error::Rquest(e) => e.is_timeout(),
         }
     }
 
@@ -102,7 +102,7 @@ impl Error {
     pub fn is_request(&self) -> bool {
         match self {
             Error::Middleware(_) => false,
-            Error::Reqwest(e) => e.is_request(),
+            Error::Rquest(e) => e.is_request(),
         }
     }
 
@@ -111,7 +111,7 @@ impl Error {
     pub fn is_connect(&self) -> bool {
         match self {
             Error::Middleware(_) => false,
-            Error::Reqwest(e) => e.is_connect(),
+            Error::Rquest(e) => e.is_connect(),
         }
     }
 
@@ -119,7 +119,7 @@ impl Error {
     pub fn is_body(&self) -> bool {
         match self {
             Error::Middleware(_) => false,
-            Error::Reqwest(e) => e.is_body(),
+            Error::Rquest(e) => e.is_body(),
         }
     }
 
@@ -127,7 +127,7 @@ impl Error {
     pub fn is_decode(&self) -> bool {
         match self {
             Error::Middleware(_) => false,
-            Error::Reqwest(e) => e.is_decode(),
+            Error::Rquest(e) => e.is_decode(),
         }
     }
 
@@ -135,7 +135,7 @@ impl Error {
     pub fn status(&self) -> Option<StatusCode> {
         match self {
             Error::Middleware(_) => None,
-            Error::Reqwest(e) => e.status(),
+            Error::Rquest(e) => e.status(),
         }
     }
 }

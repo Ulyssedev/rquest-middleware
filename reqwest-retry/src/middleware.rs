@@ -5,9 +5,9 @@ use crate::retryable_strategy::RetryableStrategy;
 use crate::{retryable::Retryable, retryable_strategy::DefaultRetryableStrategy, RetryError};
 use anyhow::anyhow;
 use http::Extensions;
-use reqwest::{Request, Response};
 use reqwest_middleware::{Error, Middleware, Next, Result};
 use retry_policies::RetryPolicy;
+use rquest::{Request, Response};
 
 #[doc(hidden)]
 // We need this macro because tracing expects the level to be const:
@@ -39,7 +39,7 @@ macro_rules! log_retry {
 ///     use retry_policies::{RetryDecision, RetryPolicy, Jitter};
 ///     use retry_policies::policies::ExponentialBackoff;
 ///     use reqwest_retry::RetryTransientMiddleware;
-///     use reqwest::Client;
+///     use rquest::Client;
 ///
 ///     // We create a ExponentialBackoff retry policy which implements `RetryPolicy`.
 ///     let retry_policy = ExponentialBackoff::builder()

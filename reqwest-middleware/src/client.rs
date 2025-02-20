@@ -1,13 +1,13 @@
 use http::Extensions;
-use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
-use reqwest::{Body, Client, IntoUrl, Method, Request, Response};
+use rquest::header::{HeaderMap, HeaderName, HeaderValue};
+use rquest::{Body, Client, IntoUrl, Method, Request, Response};
 use serde::Serialize;
 use std::convert::TryFrom;
 use std::fmt::{self, Display};
 use std::sync::Arc;
 
 #[cfg(feature = "multipart")]
-use reqwest::multipart;
+use rquest::multipart;
 
 use crate::error::Result;
 use crate::middleware::{Middleware, Next};
@@ -91,11 +91,11 @@ impl ClientBuilder {
     }
 }
 
-/// `ClientWithMiddleware` is a wrapper around [`reqwest::Client`] which runs middleware on every
+/// `ClientWithMiddleware` is a wrapper around [`rquest::Client`] which runs middleware on every
 /// request.
 #[derive(Clone, Default)]
 pub struct ClientWithMiddleware {
-    inner: reqwest::Client,
+    inner: rquest::Client,
     middleware_stack: Box<[Arc<dyn Middleware>]>,
     initialiser_stack: Box<[Arc<dyn RequestInitialiser>]>,
 }
@@ -257,11 +257,11 @@ mod service {
 
     use crate::Result;
     use http::Extensions;
-    use reqwest::{Request, Response};
+    use rquest::{Request, Response};
 
     use crate::{middleware::BoxFuture, ClientWithMiddleware, Next};
 
-    // this is meant to be semi-private, same as reqwest's pending
+    // this is meant to be semi-private, same as rquest's pending
     pub struct Pending {
         inner: BoxFuture<'static, Result<Response>>,
     }
@@ -282,7 +282,7 @@ mod service {
         type Future = Pending;
 
         fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<()>> {
-            self.inner.poll_ready(cx).map_err(crate::Error::Reqwest)
+            self.inner.poll_ready(cx).map_err(crate::Error::Rquest)
         }
 
         fn call(&mut self, req: Request) -> Self::Future {
@@ -304,7 +304,7 @@ mod service {
         type Future = Pending;
 
         fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<()>> {
-            (&self.inner).poll_ready(cx).map_err(crate::Error::Reqwest)
+            (&self.inner).poll_ready(cx).map_err(crate::Error::Rquest)
         }
 
         fn call(&mut self, req: Request) -> Self::Future {
@@ -321,10 +321,10 @@ mod service {
     }
 }
 
-/// This is a wrapper around [`reqwest::RequestBuilder`] exposing the same API.
+/// This is a wrapper around [`rquest::RequestBuilder`] exposing the same API.
 #[must_use = "RequestBuilder does nothing until you 'send' it"]
 pub struct RequestBuilder {
-    inner: reqwest::RequestBuilder,
+    inner: rquest::RequestBuilder,
     middleware_stack: Box<[Arc<dyn Middleware>]>,
     initialiser_stack: Box<[Arc<dyn RequestInitialiser>]>,
     extensions: Extensions,
@@ -333,7 +333,7 @@ pub struct RequestBuilder {
 impl RequestBuilder {
     /// Assemble a builder starting from an existing `Client` and a `Request`.
     pub fn from_parts(client: ClientWithMiddleware, request: Request) -> RequestBuilder {
-        let inner = reqwest::RequestBuilder::from_parts(client.inner, request);
+        let inner = rquest::RequestBuilder::from_parts(client.inner, request);
         RequestBuilder {
             inner,
             middleware_stack: client.middleware_stack,
@@ -367,7 +367,7 @@ impl RequestBuilder {
     }
 
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn version(self, version: reqwest::Version) -> Self {
+    pub fn version(self, version: rquest::Version) -> Self {
         RequestBuilder {
             inner: self.inner.version(version),
             ..self
@@ -380,7 +380,7 @@ impl RequestBuilder {
     /// # use anyhow::Error;
     ///
     /// # async fn run() -> Result<(), Error> {
-    /// let client = reqwest_middleware::ClientWithMiddleware::from(reqwest::Client::new());
+    /// let client = reqwest_middleware::ClientWithMiddleware::from(rquest::Client::new());
     /// let resp = client.delete("http://httpbin.org/delete")
     ///     .basic_auth("admin", Some("good password"))
     ///     .send()
@@ -479,7 +479,7 @@ impl RequestBuilder {
     /// let mut params = HashMap::new();
     /// params.insert("lang", "rust");
     ///
-    /// let client = reqwest_middleware::ClientWithMiddleware::from(reqwest::Client::new());
+    /// let client = reqwest_middleware::ClientWithMiddleware::from(rquest::Client::new());
     /// let res = client.post("http://httpbin.org")
     ///     .form(&params)
     ///     .send()
@@ -518,25 +518,9 @@ impl RequestBuilder {
         }
     }
 
-    /// Disable CORS on fetching the request.
-    ///
-    /// # WASM
-    ///
-    /// This option is only effective with WebAssembly target.
-    ///
-    /// The [request mode][mdn] will be set to 'no-cors'.
-    ///
-    /// [mdn]: https://developer.mozilla.org/en-US/docs/Web/API/Request/mode
-    pub fn fetch_mode_no_cors(self) -> Self {
-        RequestBuilder {
-            inner: self.inner.fetch_mode_no_cors(),
-            ..self
-        }
-    }
-
     /// Build a `Request`, which can be inspected, modified and executed with
     /// `ClientWithMiddleware::execute()`.
-    pub fn build(self) -> reqwest::Result<Request> {
+    pub fn build(self) -> rquest::Result<Request> {
         self.inner.build()
     }
 
@@ -545,7 +529,7 @@ impl RequestBuilder {
     ///
     /// This is similar to [`RequestBuilder::build()`], but also returns the
     /// embedded `Client`.
-    pub fn build_split(self) -> (ClientWithMiddleware, reqwest::Result<Request>) {
+    pub fn build_split(self) -> (ClientWithMiddleware, rquest::Result<Request>) {
         let Self {
             inner,
             middleware_stack,
@@ -586,7 +570,7 @@ impl RequestBuilder {
     /// # use anyhow::Error;
     /// #
     /// # async fn run() -> Result<(), Error> {
-    /// let response = reqwest_middleware::ClientWithMiddleware::from(reqwest::Client::new())
+    /// let response = reqwest_middleware::ClientWithMiddleware::from(rquest::Client::new())
     ///     .get("https://hyper.rs")
     ///     .send()
     ///     .await?;
@@ -607,10 +591,10 @@ impl RequestBuilder {
     /// # Examples
     ///
     /// ```
-    /// # use reqwest::Error;
+    /// # use rquest::Error;
     /// #
     /// # fn run() -> Result<(), Error> {
-    /// let client = reqwest_middleware::ClientWithMiddleware::from(reqwest::Client::new());
+    /// let client = reqwest_middleware::ClientWithMiddleware::from(rquest::Client::new());
     /// let builder = client.post("http://httpbin.org/post")
     ///     .body("from a &str!");
     /// let clone = builder.try_clone();
