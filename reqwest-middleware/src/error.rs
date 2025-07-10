@@ -1,5 +1,5 @@
-use rquest::{StatusCode, Url};
 use thiserror::Error;
+use wreq::{StatusCode, Url};
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -8,9 +8,9 @@ pub enum Error {
     /// There was an error running some middleware
     #[error(transparent)]
     Middleware(#[from] anyhow::Error),
-    /// Error from the underlying rquest client
+    /// Error from the underlying wreq client
     #[error(transparent)]
-    Rquest(#[from] rquest::Error),
+    Rquest(#[from] wreq::Error),
 }
 
 impl Error {

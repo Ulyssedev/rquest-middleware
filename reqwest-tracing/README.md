@@ -30,7 +30,7 @@ http = "1"
 
 ```rust,skip
 use reqwest_tracing::{default_on_request_end, reqwest_otel_span, ReqwestOtelSpanBackend, TracingMiddleware};
-use rquest::{Request, Response};
+use wreq::{Request, Response};
 use reqwest_middleware::{ClientBuilder, Result};
 use std::time::Instant;
 use http::Extensions;
@@ -66,7 +66,7 @@ async fn main() {
 }
 
 async fn run() {
-    let client = ClientBuilder::new(rquest::Client::new())
+    let client = ClientBuilder::new(wreq::Client::new())
         .with(TracingMiddleware::<TimeTrace>::new())
         .build();
 

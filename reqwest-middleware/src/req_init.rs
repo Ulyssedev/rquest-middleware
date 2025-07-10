@@ -37,7 +37,7 @@ where
 /// This is a good way to inject extensions to middleware deeper in the stack
 ///
 /// ```
-/// use rquest::{Client, Request, Response};
+/// use wreq::{Client, Request, Response};
 /// use reqwest_middleware::{ClientBuilder, Middleware, Next, Result, Extension};
 /// use http::Extensions;
 ///
@@ -66,8 +66,8 @@ where
 /// }
 ///
 /// async fn run() {
-///     let rquest_client = Client::builder().build().unwrap();
-///     let client = ClientBuilder::new(rquest_client)
+///     let wreq_client = Client::builder().build().unwrap();
+///     let client = ClientBuilder::new(wreq_client)
 ///         .with_init(Extension(LogName("my-client")))
 ///         .with(LoggingMiddleware)
 ///         .build();

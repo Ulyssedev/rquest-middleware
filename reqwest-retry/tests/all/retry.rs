@@ -2,8 +2,8 @@ use futures::FutureExt;
 use paste::paste;
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
-use rquest::Client;
-use rquest::StatusCode;
+use wreq::Client;
+use wreq::StatusCode;
 use std::sync::atomic::AtomicI8;
 use std::sync::{
     atomic::{AtomicU32, Ordering},

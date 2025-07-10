@@ -3,8 +3,8 @@ use std::borrow::Cow;
 use http::Extensions;
 use matchit::Router;
 use reqwest_middleware::{Error, Result};
-use rquest::{Request, Response, StatusCode as RequestStatusCode, Url};
 use tracing::{warn, Span};
+use wreq::{Request, Response, StatusCode as RequestStatusCode, Url};
 
 use crate::reqwest_otel_span;
 
@@ -79,8 +79,8 @@ pub fn default_on_request_end(span: &Span, outcome: &Result<Response>) {
 }
 
 #[cfg(feature = "deprecated_attributes")]
-fn get_header_value(key: &str, headers: &rquest::header::HeaderMap) -> String {
-    let header_default = &rquest::header::HeaderValue::from_static("");
+fn get_header_value(key: &str, headers: &wreq::header::HeaderMap) -> String {
+    let header_default = &wreq::header::HeaderValue::from_static("");
     format!("{:?}", headers.get(key).unwrap_or(header_default)).replace('"', "")
 }
 
@@ -208,7 +208,7 @@ fn get_span_status(request_status: RequestStatusCode) -> Option<&'static str> {
 ///     TracingMiddleware, OtelName
 /// };
 /// # async fn example() -> Result<()> {
-/// let reqwest_client = rquest::Client::builder().build().unwrap();
+/// let reqwest_client = wreq::Client::builder().build().unwrap();
 /// let client = ClientBuilder::new(reqwest_client)
 ///    // Inserts the extension before the request is started
 ///    .with_init(Extension(OtelName("my-client".into())))
@@ -245,7 +245,7 @@ pub struct OtelName(pub Cow<'static, str>);
 ///     TracingMiddleware, OtelPathNames
 /// };
 /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-/// let reqwest_client = rquest::Client::builder().build()?;
+/// let reqwest_client = wreq::Client::builder().build()?;
 /// let client = ClientBuilder::new(reqwest_client)
 ///    // Inserts the extension before the request is started
 ///    .with_init(Extension(OtelPathNames::known_paths(["/payment/{paymentId}"])?))
@@ -325,7 +325,7 @@ impl OtelPathNames {
 ///     TracingMiddleware, DisableOtelPropagation
 /// };
 /// # async fn example() -> Result<()> {
-/// let reqwest_client = rquest::Client::builder().build().unwrap();
+/// let reqwest_client = wreq::Client::builder().build().unwrap();
 /// let client = ClientBuilder::new(reqwest_client)
 ///    // Inserts the extension before the request is started
 ///    .with_init(Extension(DisableOtelPropagation))
@@ -366,7 +366,7 @@ fn remove_credentials(url: &Url) -> Cow<'_, str> {
 mod tests {
     use super::*;
 
-    use rquest::header::{HeaderMap, HeaderValue};
+    use wreq::header::{HeaderMap, HeaderValue};
 
     fn get_header_value(key: &str, headers: &HeaderMap) -> String {
         let header_default = &HeaderValue::from_static("");

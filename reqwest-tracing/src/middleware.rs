@@ -1,6 +1,6 @@
 use http::Extensions;
 use reqwest_middleware::{Middleware, Next, Result};
-use rquest::{Request, Response};
+use wreq::{Request, Response};
 use tracing::Instrument;
 
 use crate::{DefaultSpanBackend, ReqwestOtelSpanBackend};

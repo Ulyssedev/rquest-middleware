@@ -1,13 +1,13 @@
 use http::Extensions;
-use rquest::header::{HeaderMap, HeaderName, HeaderValue};
-use rquest::{Body, Client, IntoUrl, Method, Request, Response};
 use serde::Serialize;
 use std::convert::TryFrom;
 use std::fmt::{self, Display};
 use std::sync::Arc;
+use wreq::header::{HeaderMap, HeaderName, HeaderValue};
+use wreq::{Body, Client, IntoUrl, Method, Request, Response};
 
 #[cfg(feature = "multipart")]
-use rquest::multipart;
+use wreq::multipart;
 
 use crate::error::Result;
 use crate::middleware::{Middleware, Next};
@@ -91,11 +91,11 @@ impl ClientBuilder {
     }
 }
 
-/// `ClientWithMiddleware` is a wrapper around [`rquest::Client`] which runs middleware on every
+/// `ClientWithMiddleware` is a wrapper around [`wreq::Client`] which runs middleware on every
 /// request.
 #[derive(Clone, Default)]
 pub struct ClientWithMiddleware {
-    inner: rquest::Client,
+    inner: wreq::Client,
     middleware_stack: Box<[Arc<dyn Middleware>]>,
     initialiser_stack: Box<[Arc<dyn RequestInitialiser>]>,
 }
@@ -257,11 +257,11 @@ mod service {
 
     use crate::Result;
     use http::Extensions;
-    use rquest::{Request, Response};
+    use wreq::{Request, Response};
 
     use crate::{middleware::BoxFuture, ClientWithMiddleware, Next};
 
-    // this is meant to be semi-private, same as rquest's pending
+    // this is meant to be semi-private, same as wreq's pending
     pub struct Pending {
         inner: BoxFuture<'static, Result<Response>>,
     }
@@ -321,10 +321,10 @@ mod service {
     }
 }
 
-/// This is a wrapper around [`rquest::RequestBuilder`] exposing the same API.
+/// This is a wrapper around [`wreq::RequestBuilder`] exposing the same API.
 #[must_use = "RequestBuilder does nothing until you 'send' it"]
 pub struct RequestBuilder {
-    inner: rquest::RequestBuilder,
+    inner: wreq::RequestBuilder,
     middleware_stack: Box<[Arc<dyn Middleware>]>,
     initialiser_stack: Box<[Arc<dyn RequestInitialiser>]>,
     extensions: Extensions,
@@ -333,7 +333,7 @@ pub struct RequestBuilder {
 impl RequestBuilder {
     /// Assemble a builder starting from an existing `Client` and a `Request`.
     pub fn from_parts(client: ClientWithMiddleware, request: Request) -> RequestBuilder {
-        let inner = rquest::RequestBuilder::from_parts(client.inner, request);
+        let inner = wreq::RequestBuilder::from_parts(client.inner, request);
         RequestBuilder {
             inner,
             middleware_stack: client.middleware_stack,
@@ -367,7 +367,7 @@ impl RequestBuilder {
     }
 
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn version(self, version: rquest::Version) -> Self {
+    pub fn version(self, version: wreq::Version) -> Self {
         RequestBuilder {
             inner: self.inner.version(version),
             ..self
@@ -380,7 +380,7 @@ impl RequestBuilder {
     /// # use anyhow::Error;
     ///
     /// # async fn run() -> Result<(), Error> {
-    /// let client = reqwest_middleware::ClientWithMiddleware::from(rquest::Client::new());
+    /// let client = reqwest_middleware::ClientWithMiddleware::from(wreq::Client::new());
     /// let resp = client.delete("http://httpbin.org/delete")
     ///     .basic_auth("admin", Some("good password"))
     ///     .send()
@@ -479,7 +479,7 @@ impl RequestBuilder {
     /// let mut params = HashMap::new();
     /// params.insert("lang", "rust");
     ///
-    /// let client = reqwest_middleware::ClientWithMiddleware::from(rquest::Client::new());
+    /// let client = reqwest_middleware::ClientWithMiddleware::from(wreq::Client::new());
     /// let res = client.post("http://httpbin.org")
     ///     .form(&params)
     ///     .send()
@@ -520,7 +520,7 @@ impl RequestBuilder {
 
     /// Build a `Request`, which can be inspected, modified and executed with
     /// `ClientWithMiddleware::execute()`.
-    pub fn build(self) -> rquest::Result<Request> {
+    pub fn build(self) -> wreq::Result<Request> {
         self.inner.build()
     }
 
@@ -529,7 +529,7 @@ impl RequestBuilder {
     ///
     /// This is similar to [`RequestBuilder::build()`], but also returns the
     /// embedded `Client`.
-    pub fn build_split(self) -> (ClientWithMiddleware, rquest::Result<Request>) {
+    pub fn build_split(self) -> (ClientWithMiddleware, wreq::Result<Request>) {
         let Self {
             inner,
             middleware_stack,
@@ -570,7 +570,7 @@ impl RequestBuilder {
     /// # use anyhow::Error;
     /// #
     /// # async fn run() -> Result<(), Error> {
-    /// let response = reqwest_middleware::ClientWithMiddleware::from(rquest::Client::new())
+    /// let response = reqwest_middleware::ClientWithMiddleware::from(wreq::Client::new())
     ///     .get("https://hyper.rs")
     ///     .send()
     ///     .await?;
@@ -591,10 +591,10 @@ impl RequestBuilder {
     /// # Examples
     ///
     /// ```
-    /// # use rquest::Error;
+    /// # use wreq::Error;
     /// #
     /// # fn run() -> Result<(), Error> {
-    /// let client = reqwest_middleware::ClientWithMiddleware::from(rquest::Client::new());
+    /// let client = reqwest_middleware::ClientWithMiddleware::from(wreq::Client::new());
     /// let builder = client.post("http://httpbin.org/post")
     ///     .body("from a &str!");
     /// let clone = builder.try_clone();

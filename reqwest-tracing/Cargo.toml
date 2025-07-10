@@ -58,7 +58,7 @@ anyhow = "1.0.70"
 async-trait = "0.1.51"
 matchit = "0.8.0"
 http = "1"
-rquest = { version = "2.1.5", default-features = false }
+wreq = { version = "5", default-features = false }
 tracing = "0.1.26"
 
 opentelemetry_0_20_pkg = { package = "opentelemetry", version = "0.20.0", optional = true }

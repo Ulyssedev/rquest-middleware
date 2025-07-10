@@ -1,6 +1,6 @@
-# rquest-middleware
+# wreq-middleware
 
-A crate implementing a wrapper around [rquest](https://crates.io/crates/rquest)
+A crate implementing a wrapper around [wreq](https://crates.io/crates/wreq)
 to allow for client middleware chains.
 
 Note: This fork is experimental and not meant for production use. Use at your own risk.
@@ -32,8 +32,8 @@ The `reqwest-middleware` client exposes the same interface as a plain `reqwest` 
 # Cargo.toml
 # ...
 [dependencies]
-rquest = { version = "2.1.5", features = ["rustls-tls"] }
-reqwest-middleware = { git = "https://github.com/Ulyssedev/rquest-middleware.git"} # Line to change in order to use the fork
+wreq = { version = "2.1.5", features = ["rustls-tls"] }
+reqwest-middleware = { git = "https://github.com/Ulyssedev/wreq-middleware.git"} # Line to change in order to use the fork
 reqwest-retry = "0.7"
 reqwest-tracing = "0.5"
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
@@ -48,7 +48,7 @@ use reqwest_tracing::TracingMiddleware;
 async fn main() {
     // Retry up to 3 times with increasing intervals between attempts.
     let retry_policy = ExponentialBackoff::builder().build_with_max_retries(3);
-    let client = ClientBuilder::new(rquest::Client::new())
+    let client = ClientBuilder::new(wreq::Client::new())
         // Trace HTTP requests. See the tracing crate to make use of these traces.
         .with(TracingMiddleware::default())
         // Retry failed requests.

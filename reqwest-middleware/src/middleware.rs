@@ -1,5 +1,5 @@
 use http::Extensions;
-use rquest::{Client, Request, Response};
+use wreq::{Client, Request, Response};
 
 use crate::error::{Error, Result};
 
@@ -11,7 +11,7 @@ use std::sync::Arc;
 /// # Example
 ///
 /// ```
-/// use rquest::{Client, Request, Response};
+/// use wreq::{Client, Request, Response};
 /// use reqwest_middleware::{ClientBuilder, Middleware, Next, Result};
 /// use http::Extensions;
 ///
