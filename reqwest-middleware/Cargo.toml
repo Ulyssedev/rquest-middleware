@@ -25,7 +25,7 @@ thiserror = "1.0.21"
 tower-service = "0.3.0"
 
 [dev-dependencies]
-wreq = { version = "5" }
+wreq = { version = "6.0.0-rc.8" }
 reqwest-retry = { path = "../reqwest-retry" }
 reqwest-tracing = { path = "../reqwest-tracing" }
 tokio = { version = "1.0.0", features = ["macros", "rt-multi-thread"] }

@@ -242,7 +242,7 @@ impl fmt::Debug for ClientWithMiddleware {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         // skipping middleware_stack field for now
         f.debug_struct("ClientWithMiddleware")
-            .field("inner", &self.inner)
+            // .field("inner", &self.inner)
             .finish_non_exhaustive()
     }
 }

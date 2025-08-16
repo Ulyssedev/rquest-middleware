@@ -20,7 +20,7 @@ anyhow = "1.0.0"
 async-trait = "0.1.51"
 futures = "0.3.0"
 http = "1.0"
-wreq = { version = "5", default-features = false }
+wreq = { version = "6.0.0-rc.8", default-features = false }
 retry-policies = "0.4"
 thiserror = "1.0.61"
 tracing = { version = "0.1.26", optional = true }
