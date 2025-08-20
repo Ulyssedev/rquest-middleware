@@ -95,7 +95,7 @@ impl ClientBuilder {
 /// request.
 #[derive(Clone, Default)]
 pub struct ClientWithMiddleware {
-    inner: wreq::Client,
+    pub inner: wreq::Client, // Let's expose the client so that other requests can be made during the middleware chain
     middleware_stack: Box<[Arc<dyn Middleware>]>,
     initialiser_stack: Box<[Arc<dyn RequestInitialiser>]>,
 }
@@ -343,6 +343,8 @@ impl RequestBuilder {
     }
 
     /// Add a `Header` to this Request.
+    ///
+    /// If the header is already present, the value will be replaced.
     pub fn header<K, V>(self, key: K, value: V) -> Self
     where
         HeaderName: TryFrom<K>,
@@ -366,10 +368,57 @@ impl RequestBuilder {
         }
     }
 
+    /// Add a `Header` to append to the request.
+    ///
+    /// The new header is always appended to the request, even if the header already exists.
+    pub fn header_append<K, V>(self, key: K, value: V) -> Self
+    where
+        HeaderName: TryFrom<K>,
+        <HeaderName as TryFrom<K>>::Error: Into<http::Error>,
+        HeaderValue: TryFrom<V>,
+        <HeaderValue as TryFrom<V>>::Error: Into<http::Error>,
+    {
+        RequestBuilder {
+            inner: self.inner.header_append(key, value),
+            ..self
+        }
+    }
+
+    /// Set the original headers for this request.
+    pub fn orig_headers(self, orig_headers: wreq::header::OrigHeaderMap) -> Self {
+        RequestBuilder {
+            inner: self.inner.orig_headers(orig_headers),
+            ..self
+        }
+    }
+
+    /// Enable or disable client default headers for this request.
+    ///
+    /// By default, client default headers are included. Set to `false` to skip them.
+    pub fn default_headers(self, enable: bool) -> Self {
+        RequestBuilder {
+            inner: self.inner.default_headers(enable),
+            ..self
+        }
+    }
+
     #[cfg(not(target_arch = "wasm32"))]
     pub fn version(self, version: wreq::Version) -> Self {
         RequestBuilder {
             inner: self.inner.version(version),
+            ..self
+        }
+    }
+
+    /// Enable HTTP authentication.
+    #[inline]
+    pub fn auth<V>(self, value: V) -> Self
+    where
+        HeaderValue: TryFrom<V>,
+        <HeaderValue as TryFrom<V>>::Error: Into<http::Error>,
+    {
+        RequestBuilder {
+            inner: self.inner.auth(value),
             ..self
         }
     }
@@ -427,6 +476,32 @@ impl RequestBuilder {
     pub fn timeout(self, timeout: std::time::Duration) -> Self {
         RequestBuilder {
             inner: self.inner.timeout(timeout),
+            ..self
+        }
+    }
+
+    /// Set the proxy for this request.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use reqwest_middleware::{
+    ///     ClientWithMiddleware,
+    /// };
+    /// use wreq::Proxy;
+    ///
+    /// let client = ClientWithMiddleware::from(wreq::Client::new());
+    /// let proxy = Proxy::all("http://hyper.rs/prox")?.basic_auth("Aladdin", "open sesame");
+    ///
+    /// let resp = client
+    ///     .get("https://tls.peet.ws/api/all")
+    ///     .proxy(proxy)
+    ///     .send()
+    ///     .await?;
+    /// ```
+    pub fn proxy(self, proxy: wreq::Proxy) -> Self {
+        RequestBuilder {
+            inner: self.inner.proxy(proxy),
             ..self
         }
     }
