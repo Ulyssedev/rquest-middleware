@@ -1,5 +1,6 @@
 use thiserror::Error;
-use wreq::{StatusCode, Url};
+use wreq::StatusCode;
+use wreq::Uri;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -22,10 +23,10 @@ impl Error {
     }
 
     /// Returns a possible URL related to this error.
-    pub fn url(&self) -> Option<&Url> {
+    pub fn url(&self) -> Option<&Uri> {
         match self {
             Error::Middleware(_) => None,
-            Error::Rquest(e) => e.url(),
+            Error::Rquest(e) => e.uri(),
         }
     }
 
@@ -34,18 +35,18 @@ impl Error {
     /// This is useful if you need to remove sensitive information from the URL
     /// (e.g. an API key in the query), but do not want to remove the URL
     /// entirely.
-    pub fn url_mut(&mut self) -> Option<&mut Url> {
+    pub fn url_mut(&mut self) -> Option<&mut Uri> {
         match self {
             Error::Middleware(_) => None,
-            Error::Rquest(e) => e.url_mut(),
+            Error::Rquest(e) => e.uri_mut(),
         }
     }
 
     /// Adds a url related to this error (overwriting any existing).
-    pub fn with_url(self, url: Url) -> Self {
+    pub fn with_url(self, url: Uri) -> Self {
         match self {
             Error::Middleware(_) => self,
-            Error::Rquest(e) => e.with_url(url).into(),
+            Error::Rquest(e) => e.with_uri(url).into(),
         }
     }
 
@@ -54,7 +55,7 @@ impl Error {
     pub fn without_url(self) -> Self {
         match self {
             Error::Middleware(_) => self,
-            Error::Rquest(e) => e.without_url().into(),
+            Error::Rquest(e) => e.without_uri().into(),
         }
     }
 

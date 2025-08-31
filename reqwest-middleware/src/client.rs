@@ -4,10 +4,9 @@ use std::convert::TryFrom;
 use std::fmt::{self, Display};
 use std::sync::Arc;
 use wreq::header::{HeaderMap, HeaderName, HeaderValue};
-use wreq::{Body, Client, IntoUrl, Method, Request, Response};
-
 #[cfg(feature = "multipart")]
 use wreq::multipart;
+use wreq::{Body, Client, IntoUri, Method, Request, Response};
 
 use crate::error::Result;
 use crate::middleware::{Middleware, Next};
@@ -119,7 +118,7 @@ impl ClientWithMiddleware {
     /// # Errors
     ///
     /// This method fails whenever the supplied `Url` cannot be parsed.
-    pub fn get<U: IntoUrl>(&self, url: U) -> RequestBuilder {
+    pub fn get<U: IntoUri>(&self, url: U) -> RequestBuilder {
         self.request(Method::GET, url)
     }
 
@@ -128,7 +127,7 @@ impl ClientWithMiddleware {
     /// # Errors
     ///
     /// This method fails whenever the supplied `Url` cannot be parsed.
-    pub fn post<U: IntoUrl>(&self, url: U) -> RequestBuilder {
+    pub fn post<U: IntoUri>(&self, url: U) -> RequestBuilder {
         self.request(Method::POST, url)
     }
 
@@ -137,7 +136,7 @@ impl ClientWithMiddleware {
     /// # Errors
     ///
     /// This method fails whenever the supplied `Url` cannot be parsed.
-    pub fn put<U: IntoUrl>(&self, url: U) -> RequestBuilder {
+    pub fn put<U: IntoUri>(&self, url: U) -> RequestBuilder {
         self.request(Method::PUT, url)
     }
 
@@ -146,7 +145,7 @@ impl ClientWithMiddleware {
     /// # Errors
     ///
     /// This method fails whenever the supplied `Url` cannot be parsed.
-    pub fn patch<U: IntoUrl>(&self, url: U) -> RequestBuilder {
+    pub fn patch<U: IntoUri>(&self, url: U) -> RequestBuilder {
         self.request(Method::PATCH, url)
     }
 
@@ -155,7 +154,7 @@ impl ClientWithMiddleware {
     /// # Errors
     ///
     /// This method fails whenever the supplied `Url` cannot be parsed.
-    pub fn delete<U: IntoUrl>(&self, url: U) -> RequestBuilder {
+    pub fn delete<U: IntoUri>(&self, url: U) -> RequestBuilder {
         self.request(Method::DELETE, url)
     }
 
@@ -164,7 +163,7 @@ impl ClientWithMiddleware {
     /// # Errors
     ///
     /// This method fails whenever the supplied `Url` cannot be parsed.
-    pub fn head<U: IntoUrl>(&self, url: U) -> RequestBuilder {
+    pub fn head<U: IntoUri>(&self, url: U) -> RequestBuilder {
         self.request(Method::HEAD, url)
     }
 
@@ -176,7 +175,7 @@ impl ClientWithMiddleware {
     /// # Errors
     ///
     /// This method fails whenever the supplied `Url` cannot be parsed.
-    pub fn request<U: IntoUrl>(&self, method: Method, url: U) -> RequestBuilder {
+    pub fn request<U: IntoUri>(&self, method: Method, url: U) -> RequestBuilder {
         let req = RequestBuilder {
             inner: self.inner.request(method, url),
             extensions: Extensions::new(),
@@ -691,7 +690,7 @@ impl fmt::Debug for RequestBuilder {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         // skipping middleware_stack field for now
         f.debug_struct("RequestBuilder")
-            .field("inner", &self.inner)
+            //.field("inner", &self.inner)
             .finish_non_exhaustive()
     }
 }
