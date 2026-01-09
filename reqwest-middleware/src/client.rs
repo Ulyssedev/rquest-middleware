@@ -367,22 +367,6 @@ impl RequestBuilder {
         }
     }
 
-    /// Add a `Header` to append to the request.
-    ///
-    /// The new header is always appended to the request, even if the header already exists.
-    pub fn header_append<K, V>(self, key: K, value: V) -> Self
-    where
-        HeaderName: TryFrom<K>,
-        <HeaderName as TryFrom<K>>::Error: Into<http::Error>,
-        HeaderValue: TryFrom<V>,
-        <HeaderValue as TryFrom<V>>::Error: Into<http::Error>,
-    {
-        RequestBuilder {
-            inner: self.inner.header_append(key, value),
-            ..self
-        }
-    }
-
     /// Set the original headers for this request.
     pub fn orig_headers(self, orig_headers: wreq::header::OrigHeaderMap) -> Self {
         RequestBuilder {
@@ -532,12 +516,12 @@ impl RequestBuilder {
     /// # Errors
     /// This method will fail if the object you provide cannot be serialized
     /// into a query string.
-    pub fn query<T: Serialize + ?Sized>(self, query: &T) -> Self {
-        RequestBuilder {
-            inner: self.inner.query(query),
-            ..self
-        }
-    }
+    // pub fn query<T: Serialize + ?Sized>(self, query: &T) -> Self {
+    //     RequestBuilder {
+    //         inner: self.inner.query(query),
+    //         ..self
+    //     }
+    // }
 
     /// Send a form body.
     ///
@@ -566,12 +550,12 @@ impl RequestBuilder {
     ///
     /// This method fails if the passed value cannot be serialized into
     /// url encoded format
-    pub fn form<T: Serialize + ?Sized>(self, form: &T) -> Self {
-        RequestBuilder {
-            inner: self.inner.form(form),
-            ..self
-        }
-    }
+    // pub fn form<T: Serialize + ?Sized>(self, form: &T) -> Self {
+    //     RequestBuilder {
+    //         inner: self.inner.form(form),
+    //         ..self
+    //     }
+    // }
 
     /// Send a JSON body.
     ///
