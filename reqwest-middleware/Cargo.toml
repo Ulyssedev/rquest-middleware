@@ -19,7 +19,10 @@ charset = ["wreq/charset"]
 anyhow = "1.0.0"
 async-trait = "0.1.88"
 http = "1.0.0"
-wreq = { version = "6.0.0-rc.26", default-features = false }
+wreq = { version = "6.0.0-rc.26", default-features = false, features = [
+    "form",
+    "query",
+] }
 serde = "1.0.106"
 thiserror = "1.0.21"
 tower-service = "0.3.0"

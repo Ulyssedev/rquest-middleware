@@ -516,12 +516,12 @@ impl RequestBuilder {
     /// # Errors
     /// This method will fail if the object you provide cannot be serialized
     /// into a query string.
-    // pub fn query<T: Serialize + ?Sized>(self, query: &T) -> Self {
-    //     RequestBuilder {
-    //         inner: self.inner.query(query),
-    //         ..self
-    //     }
-    // }
+    pub fn query<T: Serialize + ?Sized>(self, query: &T) -> Self {
+        RequestBuilder {
+            inner: self.inner.query(query),
+            ..self
+        }
+    }
 
     /// Send a form body.
     ///
@@ -550,12 +550,12 @@ impl RequestBuilder {
     ///
     /// This method fails if the passed value cannot be serialized into
     /// url encoded format
-    // pub fn form<T: Serialize + ?Sized>(self, form: &T) -> Self {
-    //     RequestBuilder {
-    //         inner: self.inner.form(form),
-    //         ..self
-    //     }
-    // }
+    pub fn form<T: Serialize + ?Sized>(self, form: &T) -> Self {
+        RequestBuilder {
+            inner: self.inner.form(form),
+            ..self
+        }
+    }
 
     /// Send a JSON body.
     ///
